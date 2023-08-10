@@ -1,4 +1,4 @@
-const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
+const { loadFixture, mine } = require("@nomicfoundation/hardhat-network-helpers");
 const { assert } = require("chai");
 const { ethers } = require("hardhat");
 const { toUtf8Bytes, keccak256, parseEther } = ethers.utils;
@@ -48,8 +48,9 @@ describe("MyGovernor", function () {
       const event = receipt.events.find(x => x.event === 'ProposalCreated');
       const { proposalId } = event.args;
 
-      // wait for the 1 block voting delay
-      await hre.network.provider.send("evm_mine");
+      // wait for the voting delay
+      // await hre.network.provider.send("evm_mine");
+      await mine(75);
       
       return { ...deployValues, proposalId } 
     }
@@ -70,8 +71,9 @@ describe("MyGovernor", function () {
         const receipt = await tx.wait();
         const voteCastEvent = receipt.events.find(x => x.event === 'VoteCast');
         
-        // wait for the 1 block voting period
-        await hre.network.provider.send("evm_mine");
+        // wait for the voting period
+        // await hre.network.provider.send("evm_mine");
+        await mine(300);
 
         return { ...proposingValues, voteCastEvent }
       }
